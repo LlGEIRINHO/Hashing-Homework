@@ -10,15 +10,6 @@ Como cada elemento é inserido na tabela de acordo com uma String convertida em 
 
 ---
 
-## ESTRUTURA 
-
-
-HashTable                                                    +-- AVLTree (Filmes de Drama)
-   |                                                         |
-   +--- slot[12 - (exemplo)] --> ListNode("Ação") --> ListNode("Drama") --> ...
-                                        |
-                                        +-- AVLTree (filmes de Ação)
-
 ## Objetivo
 
 - Catalogar filmes por gênero, facilitando buscas e ordenações.  
