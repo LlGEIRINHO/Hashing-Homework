@@ -6,9 +6,29 @@
 #include <limits>
 #include <algorithm> 
 #include <cctype> 
+#include <chrono>
+
 using namespace std;
 
-struct Movie {
+class Timer 
+{
+    chrono::time_point<chrono::high_resolution_clock> inicio;
+    public:
+        Timer() 
+        {
+            inicio = chrono::high_resolution_clock::now();
+        }
+        ~Timer() 
+        {
+            auto fim = chrono::high_resolution_clock::now();
+            auto duracao = chrono::duration<double>(fim - inicio); 
+            cout << "Duracao: " << duracao.count() << " segundos" << endl;
+        }
+};
+
+
+struct Movie 
+{
     string title;
     int year;
     float rating;
@@ -168,6 +188,7 @@ class HashTable
 {
     static const int TABLE_SIZE = 1009;
     ListNode* table[TABLE_SIZE];
+    int Count;
 
     int hashFunction(const string& key) 
     {
@@ -207,7 +228,8 @@ class HashTable
         string searchTitle = title;
         transform(searchTitle.begin(), searchTitle.end(), searchTitle.begin(), ::tolower);
         
-        if (nodeTitle.find(searchTitle) != string::npos) {
+        if (nodeTitle.find(searchTitle) != string::npos) 
+        {
             cout << "Título: " << node->movie.title << endl;
             cout << "Ano: " << node->movie.year << endl;
             cout << "Nota: " << node->movie.rating << endl;
@@ -231,6 +253,7 @@ class HashTable
         HashTable() 
         {
             for (int i = 0; i < TABLE_SIZE; i++) {table[i] = nullptr;}
+            Count=0;
         }
 
         void insert(const Movie& movie) 
@@ -238,7 +261,12 @@ class HashTable
             int idx = hashFunction(movie.genre);
             ListNode* genreNode = findGenreNode(idx, movie.genre);
 
-            if (!genreNode) {
+            if (!genreNode) 
+            {
+                if (table[idx] != nullptr) 
+                {
+                    Count++;
+                }
                 genreNode = new ListNode(movie.genre);
                 genreNode->next = table[idx];
                 table[idx] = genreNode;
@@ -249,11 +277,14 @@ class HashTable
 
         }
 
-        void printByGenre(const string& genre) {
+        void printByGenre(const string& genre) 
+        {
+            Timer t;
             int idx = hashFunction(genre);
             ListNode* genreNode = findGenreNode(idx, genre);
 
-            if (!genreNode || !genreNode->root) {
+            if (!genreNode || !genreNode->root) 
+            {
                 cout << "Nenhum filme encontrado para o gênero: " << genre << endl;
                 return;
             }
@@ -262,11 +293,13 @@ class HashTable
             if (genreNode->root) {genreNode->root->inorder();} 
         }
 
-        int countAllMovies() {
+        int countAllMovies() 
+        {
             int total = 0;
             for (int i = 0; i < TABLE_SIZE; i++) {
                 ListNode* curr = table[i];
-                while (curr) {
+                while (curr) 
+                {
                     total += countAVLNodes(curr->root);
                     curr = curr->next;
                 }
@@ -274,47 +307,50 @@ class HashTable
             return total;
         }
 
-        int countByGenre(const string& genre) {
+        int countByGenre(const string& genre) 
+        {
             int idx = hashFunction(genre);
             ListNode* genreNode = findGenreNode(idx, genre);
             if (!genreNode) return 0;
             
-            // Implementar uma função para contar nós na AVL
+
             return countAVLNodes(genreNode->root);
         }
 
-        void searchByTitle(const string& title) {
+        void searchByTitle(const string& title) 
+        {
+            Timer t;
             bool found = false;
             for (int i = 0; i < TABLE_SIZE; i++) {
                 ListNode* curr = table[i];
-                while (curr) {
+                while (curr) 
+                {
                     if (curr->root) {curr->root->searchByTitle(title, found);}
                     curr = curr->next;
                 }
             }
             
-            if (!found) {
+            if (!found) 
+            {
                 cout << "Nenhum filme encontrado com o título \"" << title << "\"" << endl;
             }
         }
 
-        void deleteByGenre(const string& genre) {
+        void deleteByGenre(const string& genre) 
+        {
+            Timer t;
             int idx = hashFunction(genre);
             ListNode* curr = table[idx];
             ListNode* prev = nullptr;
 
-            while (curr) {
+            while (curr) 
+            {
                 if (curr->genre == genre) {
-                    // Deleta a árvore AVL completa
                     deleteAVLTree(curr->root);
                     curr->root = nullptr;
 
-                    // Remove o nó da lista encadeada
-                    if (prev) {
-                        prev->next = curr->next;
-                    } else {
-                        table[idx] = curr->next;
-                    }
+                    if (prev) {prev->next = curr->next;} 
+                    else {table[idx] = curr->next;}
 
                     ListNode* toDelete = curr;
                     curr = curr->next;
@@ -329,19 +365,23 @@ class HashTable
 
             cout << "Gênero \"" << genre << "\" não encontrado." << endl;
         }
+
+        int getCollision() const { return Count; }
 };
 
-// Função que lê o arquivo
-vector<Movie> loadFile(const string& filename) {
+vector<Movie> loadFile(const string& filename) 
+{
     vector<Movie> movies;
     ifstream file(filename);
-    if (!file.is_open()) {
+    if (!file.is_open()) 
+    {
         cout << "Erro ao abrir o arquivo: " << filename << endl;
         return movies;
     }
 
     string line;
-    while (getline(file, line)) {
+    while (getline(file, line)) 
+    {
         size_t pos1 = line.find(';');
         size_t pos2 = line.find(';', pos1 + 1);
         size_t pos3 = line.find(';', pos2 + 1);
@@ -365,6 +405,12 @@ int generateMovies()
     int result = system("python movie.py || python3 movie.py");
     return result;
 }
+
+void fileMovies(int value)
+{
+
+}
+
 int main() {
     
     HashTable ht;
@@ -385,12 +431,16 @@ int main() {
         cout << "Filmes do gênero Terror: " << ht.countByGenre("Terror") << "\n";
         cout << "Filmes do gênero Suspense: " << ht.countByGenre("Suspense") << "\n";
         cout << "Filmes do gênero Fantasia: " << ht.countByGenre("Fantasia") << "\n\n";
+        cout << "=========================================================\n";
+        cout << "Total de colisões na tabela hash: " << ht.getCollision() << "\n";
+        cout << "=========================================================\n";
         cout << "Opções:\n";
         cout << "1 - Busca de Filmes por Gênero\n";
         cout << "2 - Busca de Filme por Título\n";
         cout << "3 - Deletar Filmes por Gênero\n";
         cout << "100 - Exportar Filmes de arquivo\n";
         cout << "101 - Inserir Filme por Input\n";
+        cout << "102 - Testar Colisão\n";
         cout << "0 - Sair\n";
         cout << "=========================================================\n";
         cout << "Opção\n";
@@ -408,8 +458,8 @@ int main() {
             cout << "=== BUSCAR FILMES ===" << endl;
             cout << "Digite o Gênero que deseja Consultar: ";
             
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); //limpa o buffer até EOF - O(n);
-            getline(cin, word); // Percorre até EOF - armazena na variavel O(n);
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+            getline(cin, word);
 
             ht.printByGenre(word);
 
@@ -459,10 +509,11 @@ int main() {
 
             string filename = "movies.txt";
             vector<Movie> movies = loadFile(filename);
-            if (movies.empty()) {
-                cout << "Nenhum filme\n";
-            } else {
-                for (const Movie& m : movies) {
+            if (movies.empty()) {cout << "Nenhum filme\n";} 
+            else 
+            {
+                for (const Movie& m : movies) 
+                {
                     ht.insert(m);
                 }
                 cout << "Filmes carregados com sucesso!\n";
@@ -485,14 +536,16 @@ int main() {
             getline(cin, novoFilme.title);
             
             cout << "Ano: ";
-            while (!(cin >> novoFilme.year)) {
+            while (!(cin >> novoFilme.year)) 
+            {
                 cout << "Por favor, digite um ano válido: ";
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
             
             cout << "Nota (0.0-10.0): ";
-            while (!(cin >> novoFilme.rating) || novoFilme.rating < 0 || novoFilme.rating > 10) {
+            while (!(cin >> novoFilme.rating) || novoFilme.rating < 0 || novoFilme.rating > 10) 
+            {
                 cout << "Por favor, digite uma nota válida (0.0 a 10.0): ";
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -503,6 +556,24 @@ int main() {
             getline(cin, novoFilme.genre);
             
             ht.insert(novoFilme);
+            
+            cout << "\nFilme inserido com sucesso!\n";
+            cout << "Pressione Enter para continuar...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+
+        if(option == 102)
+        {
+            int qtd;
+            cout << "Quantidade de Elementos para inserção: ";
+            cin >> qtd;
+
+            for (int i = 0; i < qtd; i++) 
+            {
+                string generoFake = "genero" + to_string(i);
+                Movie fake("Filme X", 2020, 5.0, generoFake);
+                ht.insert(fake);
+            }
             
             cout << "\nFilme inserido com sucesso!\n";
             cout << "Pressione Enter para continuar...";
