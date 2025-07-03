@@ -4,7 +4,22 @@ Este projeto implementa um **Catálogo de Filmes por Gênero**, aplicando concei
 
 ---
 
-## ✅ Objetivo
+## OBSERVAÇÃO - Colisões
+
+Como cada elemento é inserido na tabela de acordo com uma String convertida em uma chave INT as chances de gerar uma chave e causar uma colisão são baixas, pois a inserção é dada por um gênero de filme. Contudo colisões ainda podem acontecer se ouver ao menos 141 gêneros de filmes diferentes (improvável).
+
+---
+
+## ESTRUTURA 
+
+
+HashTable                                                    +-- AVLTree (Filmes de Drama)
+   |                                                         |
+   +--- slot[12 - (exemplo)] --> ListNode("Ação") --> ListNode("Drama") --> ...
+                                        |
+                                        +-- AVLTree (filmes de Ação)
+
+## Objetivo
 
 - Catalogar filmes por gênero, facilitando buscas e ordenações.  
 - Utilizar ao menos duas estruturas de dados além da Tabela Hash, sendo **uma obrigatoriamente de ED2**.  
@@ -12,7 +27,7 @@ Este projeto implementa um **Catálogo de Filmes por Gênero**, aplicando concei
 
 ---
 
-## ✅ Funcionalidades
+## Funcionalidades
 
 - **Tabela Hash**: vetor de 1009 posições, que armazena ponteiros para listas encadeadas.  
 - **Lista Encadeada**: armazena diferentes gêneros de filmes em cada posição da hash, permitindo colisões controladas.  
@@ -22,7 +37,7 @@ Este projeto implementa um **Catálogo de Filmes por Gênero**, aplicando concei
 
 ---
 
-## ✅ Ideias (Loucuras da Minha Cabeça 😄)
+## Ideias (Loucuras da Minha Cabeça 😄)
 
 - Um script Python (`movie.py`) antigo, foi modificado ele gera dados de filmes aleatórios.
 - O código em C++ chama esse script automaticamente via `system()` para gerar filmes sempre que o usuário desejar.
@@ -30,19 +45,19 @@ Este projeto implementa um **Catálogo de Filmes por Gênero**, aplicando concei
 
 ---
 
-## ✅ Análise de Complexidade (Tempo)
+## Análise de Complexidade (Tempo)
 
-| Função                  | Complexidade |
-|-------------------------|--------------|
-| AVL insert              | O(log n)     |
-| AVL inorder             | O(n)         |
-| AVL countNodes          | O(n)         |
-| Hash insert             | ???????????? |
-| Hash printByGenre       | O(n + m)     |
-| Hash countAllMovies     | O(n)         |
-| GenerateMovies (C++)    | O(1)         |
-| GenerateMovies (Python) | O(n)         |
-| loadFile                | O(n)         |
+| Função                  | Complexidade  |
+|-------------------------|---------------|
+| AVL insert              | O(log n)      |
+| AVL inorder             | O(n)          |
+| AVL countNodes          | O(n)          |
+| Hash insert             | O(1) e O(n)|
+| Hash printByGenre       | O(n + m)      |
+| Hash countAllMovies     | O(n)          |
+| GenerateMovies (C++)    | O(1)          |
+| GenerateMovies (Python) | O(n)          |
+| loadFile                | O(n)          |
 
 *Observação*:  
 - **n** = quantidade total de filmes  
@@ -50,14 +65,14 @@ Este projeto implementa um **Catálogo de Filmes por Gênero**, aplicando concei
 
 ---
 
-## ✅ Pré-requisitos
+## Pré-requisitos
 
 - `g++` (no Linux instale com `sudo apt install build-essential`)
 - `python3` (no Linux instale com `sudo apt install python3`)
 
 ---
 
-## ✅ Instalação
+## Instalação
 
 ```bash
 git clone git@github.com:LlGEIRINHO/Hashing-Homework.git
